@@ -10,7 +10,7 @@ public class mob_script : MonoBehaviour
         private set;
     }
     public NetworkView netview { get { return GetComponent<NetworkView>(); } }
-    public CharacterController charCtrl { get { return GetComponent<CharacterController>(); } }
+    //public CharacterController charCtrl { get { return GetComponent<CharacterController>(); } }
 
     void Start()
     {

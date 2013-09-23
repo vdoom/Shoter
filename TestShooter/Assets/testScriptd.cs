@@ -9,6 +9,8 @@ public class testScriptd : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Network.natFacilitatorIP = "89.252.4.131";
+        MasterServer.ipAddress = "89.252.4.131";
         MasterServer.RequestHostList("MadBubbleSmashGame");
         //m_anim.clip.wrapMode = WrapMode.Loop;
         //m_anim.Play("run", AnimationPlayMode.Mix);

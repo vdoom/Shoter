@@ -14,6 +14,8 @@ public class FPSJoystick : MonoBehaviour
     private bool m_takedRightTouch = false;
     private Vector2 m_leftDiffVector = Vector2.zero;
     private Vector2 m_rightDiffVector = Vector2.zero;
+    private int m_leftFingerId = -1;
+    private int m_rightFingerId = -1;
 
     public Vector2 startTouchPosLeft
     {
@@ -142,6 +144,8 @@ public class FPSJoystick : MonoBehaviour
 
     void Update()
     {
+        hasRight = false;
+        hasLeft = false;
         foreach(Touch touch in Input.touches)
         {
             if (!blockLeftSide && touch.position.x < (Screen.width / 2))
@@ -150,11 +154,12 @@ public class FPSJoystick : MonoBehaviour
                 {
                     m_takedLeftTouch = true;
                     m_leftTouch = touch;
+                    m_leftFingerId = touch.fingerId;
                     startTouchPosLeft = m_leftTouch.position;
                     currTouchPosLeft = m_leftTouch.position;
                     DrawLeft(currTouchPosLeft);
                 }
-                else if (m_takedLeftTouch && m_leftTouch.fingerId == touch.fingerId)
+                else if (m_takedLeftTouch && m_leftFingerId == touch.fingerId)
                 {
                     if (touch.phase == TouchPhase.Moved)
                     {
@@ -168,6 +173,7 @@ public class FPSJoystick : MonoBehaviour
                         startTouchPosLeft = new Vector2(0,0);
                         currTouchPosLeft = new Vector2(0,0);
                         m_leftDiffVector = new Vector2(0, 0);
+                        m_leftFingerId = -1;
                     }
                 }
             }
@@ -177,10 +183,11 @@ public class FPSJoystick : MonoBehaviour
                 {
                     m_takedRightTouch = true;
                     m_rightTouch = touch;
+                    m_rightFingerId = touch.fingerId;
                     startTouchPosRight = m_rightTouch.position;
                     currTouchPosRight = m_rightTouch.position;
                 }
-                else if (m_takedRightTouch && m_rightTouch.fingerId == touch.fingerId)
+                else if (m_takedRightTouch && m_rightFingerId == touch.fingerId)
                 {
                     if (touch.phase == TouchPhase.Moved)
                     {
@@ -193,29 +200,35 @@ public class FPSJoystick : MonoBehaviour
                         startTouchPosRight = new Vector2(0, 0);
                         currTouchPosRight = new Vector2(0, 0);
                         m_rightDiffVector = new Vector2(0, 0);
+                        m_rightFingerId = -1;
                     }
                 }
             }
-            if (touch.fingerId == m_leftTouch.fingerId)
+            if (touch.fingerId == m_leftFingerId)
             { hasLeft = true; }
-            if (touch.fingerId == m_rightTouch.fingerId)
+            if (touch.fingerId == m_rightFingerId)
             { hasRight = true; }
         }
-        if (!hasLeft)
+        if (!hasLeft || (currTouchPosLeft.x > (Screen.width / 2)))
         {
+            hasLeft = false; 
             m_leftDiffVector = Vector2.zero;
             m_takedLeftTouch = false;
             startTouchPosLeft = new Vector2(0, 0);
             currTouchPosLeft = new Vector2(0, 0);
             m_leftDiffVector = new Vector2(0, 0);
+            m_leftFingerId = -1;
         }
-        if (!hasRight)
+
+        if (!hasRight || (currTouchPosRight.x < (Screen.width / 2)))
         {
+            hasRight = false;
             m_rightDiffVector = Vector2.zero;
             m_takedRightTouch = false;
             startTouchPosRight = new Vector2(0, 0);
             currTouchPosRight = new Vector2(0, 0);
             m_rightDiffVector = new Vector2(0, 0);
+            m_rightFingerId = -1;
         }
     }
 }

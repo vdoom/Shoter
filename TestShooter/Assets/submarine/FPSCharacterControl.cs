@@ -4,7 +4,7 @@ using System.Collections;
 public class FPSCharacterControl : MonoBehaviour
 {
     [SerializeField] FPSJoystick m_joystick = null;
-    [SerializeField] CharacterController m_characterController = null;
+    [SerializeField] Rigidbody m_characterController = null;
     [SerializeField] GameObject m_camera = null;
     [SerializeField] GameObject myMob = null;
     [SerializeField] GameObject myGun = null;
@@ -37,20 +37,23 @@ public class FPSCharacterControl : MonoBehaviour
                 { if (cam != m_camera.GetComponent<Camera>())cam.enabled = false; }
                 m_camera.GetComponent<Camera>().enabled = true;
                 //-------------------------------------------------------------------------------------------- 
-                m_rotationVector = m_joystick.rightDiffVector;
-                m_rotationVector /= 3;
-                if (m_rotationVector.x > 15) m_rotationVector.x = 15;
-                if (m_rotationVector.x < -15) m_rotationVector.x = -15;
-                if (m_rotationVector.y > 10) m_rotationVector.y = 10;
-                if (m_rotationVector.y < -10) m_rotationVector.y = -10;
-                //m_rotationVector.Normalize();
-                if (Mathf.Abs(m_joystick.rightDiffVector.x) > 1)
+                if (m_joystick.rightDiffVector.x != 0 || m_joystick.rightDiffVector.y != 0)
                 {
-                    transform.Rotate(Vector2.up, m_rotationVector.x * 0.5f, Space.World);
-                }
-                if (Mathf.Abs(m_joystick.rightDiffVector.y) > 1)
-                {
-                    m_camera.transform.Rotate(Vector2.right, -(m_rotationVector.y * 0.5f), Space.Self);
+                    m_rotationVector = m_joystick.rightDiffVector;
+                    m_rotationVector /= 3;
+                    if (m_rotationVector.x > 15) m_rotationVector.x = 15;
+                    if (m_rotationVector.x < -15) m_rotationVector.x = -15;
+                    if (m_rotationVector.y > 10) m_rotationVector.y = 10;
+                    if (m_rotationVector.y < -10) m_rotationVector.y = -10;
+                    //m_rotationVector.Normalize();
+                    if (Mathf.Abs(m_joystick.rightDiffVector.x) > 1)
+                    {
+                        transform.Rotate(Vector2.up, m_rotationVector.x * 0.5f, Space.World);
+                    }
+                    if (Mathf.Abs(m_joystick.rightDiffVector.y) > 1)
+                    {
+                        m_camera.transform.Rotate(Vector2.right, -(m_rotationVector.y * 0.5f), Space.Self);
+                    }
                 }
                 //m_rotationVector = m_joystick.rightVector;
                 //m_rotationVector.Normalize();
@@ -63,7 +66,7 @@ public class FPSCharacterControl : MonoBehaviour
                 //    m_camera.transform.Rotate(Vector2.right, -(m_rotationVector.y * 1.5f), Space.Self);
                 //}
                 //--------------------------------------------------------------------------------------------
-                if (m_joystick.leftVector.magnitude > 10)
+                if ((m_joystick.leftVector.magnitude > 10))// && (m_joystick.leftDiffVector.x != 0) && (m_joystick.leftDiffVector.y != 0))
                 {
                     //Vector3 MovingVector = 
                     Vector3 movement = transform.TransformDirection(new Vector3(m_joystick.leftVector.x, 0, m_joystick.leftVector.y));
@@ -73,22 +76,24 @@ public class FPSCharacterControl : MonoBehaviour
                     if (m_movingVector.z > 0.8f) m_movingVector.z = 0.8f;
                     if (m_movingVector.x < -0.8f) m_movingVector.x = -0.8f;
                     if (m_movingVector.z < -0.8f) m_movingVector.z = -0.8f;
+                    
                 }
                 else
                 {
                     m_movingVector = new Vector3(0, 0, 0);
                 }
-                if (!m_characterController.isGrounded)
-                {
-                    yVelocity += Physics.gravity.y * Time.deltaTime;
-                }
-                else if (yVelocity < 0)
-                {
-                    yVelocity = 0;
-                }
-                m_movingVector.y += yVelocity;
-
-                m_characterController.Move(m_movingVector);
+                //if (!m_characterController.isGrounded)
+                //{
+                //    yVelocity += Physics.gravity.y * Time.deltaTime;
+                //}
+                //else if (yVelocity < 0)
+                //{
+                //    yVelocity = 0;
+                //}
+                //m_movingVector.y += yVelocity;
+                Vector3 currPos = transform.position;
+                //m_characterController.Move(m_movingVector);
+                m_characterController.MovePosition(currPos+m_movingVector);
             }
             else
             {
@@ -104,7 +109,6 @@ public class FPSCharacterControl : MonoBehaviour
         //Debug.Log(m_isDead);
         if (!m_isDead && GetComponent<mob_script>().health <= 0)
         {
-            Debug.Log("Dead");
             m_isDead = true;
             myMob.animation.PlayQueued("death", QueueMode.PlayNow);
         }
@@ -115,7 +119,6 @@ public class FPSCharacterControl : MonoBehaviour
         Rect rectButtonJump = new Rect(Screen.width - 105, Screen.height - 105, 100, 100);
         if (GUI.Button(rectButtonJump, "Jump"))
         {
-            Debug.Log("Jump");
             yVelocity = 2;
         }
     }
