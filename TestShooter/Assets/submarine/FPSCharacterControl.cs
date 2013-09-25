@@ -160,8 +160,6 @@ public class FPSCharacterControl : MonoBehaviour
 				rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
 			}
 			//Input.ResetInputAxes();
-			//Debug.Log("Y: "+Input.GetAxis("Mouse Y"));
-			//Debug.Log("X: "+Input.GetAxis("Mouse X"));
 			#endregion
 #endif
         }

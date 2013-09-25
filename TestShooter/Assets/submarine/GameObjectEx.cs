@@ -29,7 +29,7 @@ public class GameObjectEx : MonoBehaviour
         }
     }
     public virtual bool isActive
-    { get { return gameObject.active; } set { gameObject.active = value; } }
+    { get { return gameObject.active; } set { gameObject.SetActive(value); } }
     public virtual bool visible
     {
         get
