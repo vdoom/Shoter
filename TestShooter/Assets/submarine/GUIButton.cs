@@ -20,7 +20,7 @@ public class GUIButton : MonoBehaviour
 
     void Start()
     {
-        m_rect = new Rect(m_pos.x - (m_size.x / 2), m_pos.y - (m_size.y / 2), m_size.x, m_size.y);
+        m_rect = new Rect(Screen.width * m_pos.x - (m_size.x / 2), Screen.height * m_pos.y - (m_size.y / 2), m_size.x, m_size.y);
     }
 
     void OnGUI()
@@ -42,14 +42,14 @@ public class GUIButton : MonoBehaviour
 
                 if (!m_isTouched && touch.phase == TouchPhase.Began)
                 {
-                    if (touch.position.x > (m_pos.x - m_size.x / 2) &&
-                        touch.position.x < (m_pos.x + m_size.x / 2) &&
-                        touch.position.y > (m_pos.y - m_size.y / 2) &&
-                        touch.position.y < (m_pos.y + m_size.y / 2))
+                    if (touch.position.x > (Screen.width * m_pos.x - m_size.x / 2) &&
+                        touch.position.x < (Screen.width * m_pos.x + m_size.x / 2) &&
+                        touch.position.y > (Screen.width * m_pos.y - m_size.y / 2) &&
+                        touch.position.y < (Screen.width * m_pos.y + m_size.y / 2))
                     {
                         m_touch = touch;
                         m_isTouched = true;
-                        OnStartPress();
+                        if(OnStartPress != null) OnStartPress();
                     }
                 }
                 else if (m_isTouched)
@@ -57,29 +57,29 @@ public class GUIButton : MonoBehaviour
                     if (touch.fingerId == m_touch.fingerId)
                     {
                         m_touch = touch;
-                        if (touch.position.x > (m_pos.x - m_size.x / 2) &&
-                            touch.position.x < (m_pos.x + m_size.x / 2) &&
-                             touch.position.y > (m_pos.y - m_size.y / 2) &&
-                             touch.position.y < (m_pos.y + m_size.y / 2))
+                        if (touch.position.x > (Screen.width * m_pos.x - m_size.x / 2) &&
+                            touch.position.x < (Screen.width * m_pos.x + m_size.x / 2) &&
+                             touch.position.y > (Screen.width * m_pos.y - m_size.y / 2) &&
+                             touch.position.y < (Screen.width * m_pos.y + m_size.y / 2))
                         {
                             if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                             {
-                                OnPress();
+                                if(OnPress != null) OnPress();
                             }
                             else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
                             {
-                                OnClick();
-                                OnRelease();
+                                if(OnClick != null) OnClick();
+                                if(OnRelease != null) OnRelease();
                                 m_isTouched = false;
                             }
                         }
                     }
                 }
             }
-            if (!finded)
+            if (!finded && m_isTouched)
             {
                 m_isTouched = false;
-                OnRelease();
+                if(OnRelease != null) OnRelease();
             }
         }
     }
