@@ -1,4 +1,4 @@
-﻿#if (UNITY_IOS || UNITY_ANDROID) //|| UNITY_EDITOR
+﻿#if (UNITY_IOS || UNITY_ANDROID) 
 #   define MOBILE_PLATFORM
 #endif
 using UnityEngine;
@@ -39,14 +39,15 @@ public class FPSCharacterControl : MonoBehaviour
 		}
         if (networkView && networkView.isMine)
         {
+			myMob.SetActive(false);
+              foreach (Camera cam in GameObject.FindObjectsOfType(typeof(Camera)))
+              { if (cam != m_camera.GetComponent<Camera>())cam.enabled = false; }
+              m_camera.GetComponent<Camera>().enabled = true;
 #if MOBILE_PLATFORM
 			#region forTouch
             if (GetComponent<mob_script>().health > 0)
             {
-             myMob.SetActive(false);
-              foreach (Camera cam in GameObject.FindObjectsOfType(typeof(Camera)))
-              { if (cam != m_camera.GetComponent<Camera>())cam.enabled = false; }
-              m_camera.GetComponent<Camera>().enabled = true;
+             
                 //-------------------------------------------------------------------------------------------- 
                 if (m_joystick.rightDiffVector.x != 0 || m_joystick.rightDiffVector.y != 0)
                 {
@@ -145,7 +146,12 @@ public class FPSCharacterControl : MonoBehaviour
 			{
 				moveVector.x += 0.5f;
 			}
-			
+			if(Input.GetMouseButtonDown(0))
+			{
+				GetComponent<mob_script>().Shot();
+			}
+			 
+			 
 			m_characterController.MovePosition(currPosMove + transform.TransformDirection(moveVector));
 			prevMouse = Input.mousePosition;
 			if(Input.GetKeyDown(KeyCode.Space))

@@ -115,6 +115,7 @@ public class testScriptd : MonoBehaviour
     void OnServerInitialized()
     {
         SpawnPlayer();
+		
     }
 
     void OnConnectedToServer()
@@ -123,7 +124,7 @@ public class testScriptd : MonoBehaviour
     }
 
     private void SpawnPlayer()
-    {
+    {Debug.Log("SpawnPlayer");
         Network.Instantiate(playerPrefab, new Vector3(0f, 5f, 0f), Quaternion.identity, 0);
     }
 }
