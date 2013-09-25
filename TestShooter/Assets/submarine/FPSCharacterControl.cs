@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿#if (UNITY_IOS || UNITY_ANDROID) //|| UNITY_EDITOR
+#   define MOBILE_PLATFORM
+#endif
+using UnityEngine;
 using System.Collections;
 
 public class FPSCharacterControl : MonoBehaviour
@@ -14,28 +17,36 @@ public class FPSCharacterControl : MonoBehaviour
     private Vector2 m_rotationVector;
     float yVelocity = 0;
     private bool m_isDead = false;
+	Vector3 prevMouse = Vector3.zero;
 
     void Start()
     {
         m_movingVector = new Vector3(0, 0, 0);
         m_rotationVector = new Vector2(0, 0);
         myGun.transform.parent = m_camera.transform;
-        if (networkView && !networkView.isMine)
-        {
-            myMob.animation.PlayQueued("run", QueueMode.PlayNow);
-        }
+        //if (networkView && !networkView.isMine)
+       // {
+       //     myMob.animation.PlayQueued("run", QueueMode.PlayNow);
+       // }
+		prevMouse = Input.mousePosition;
     }
 
     void Update()
     {
+		if(prevMouse == Vector3.zero)
+		{
+			prevMouse = Input.mousePosition;
+		}
         if (networkView && networkView.isMine)
         {
+#if MOBILE_PLATFORM
+			#region forTouch
             if (GetComponent<mob_script>().health > 0)
             {
-                myMob.SetActive(false);
-                foreach (Camera cam in GameObject.FindObjectsOfType(typeof(Camera)))
-                { if (cam != m_camera.GetComponent<Camera>())cam.enabled = false; }
-                m_camera.GetComponent<Camera>().enabled = true;
+             myMob.SetActive(false);
+              foreach (Camera cam in GameObject.FindObjectsOfType(typeof(Camera)))
+              { if (cam != m_camera.GetComponent<Camera>())cam.enabled = false; }
+              m_camera.GetComponent<Camera>().enabled = true;
                 //-------------------------------------------------------------------------------------------- 
                 if (m_joystick.rightDiffVector.x != 0 || m_joystick.rightDiffVector.y != 0)
                 {
@@ -76,6 +87,7 @@ public class FPSCharacterControl : MonoBehaviour
                     if (m_movingVector.z > 0.8f) m_movingVector.z = 0.8f;
                     if (m_movingVector.x < -0.8f) m_movingVector.x = -0.8f;
                     if (m_movingVector.z < -0.8f) m_movingVector.z = -0.8f;
+					Debug.Log("Move");
                     
                 }
                 else
@@ -95,10 +107,57 @@ public class FPSCharacterControl : MonoBehaviour
                 //m_characterController.Move(m_movingVector);
                 m_characterController.MovePosition(currPos+m_movingVector);
             }
-            else
+			#endregion
+#else
+			#region forKeyBoard
+			m_rotationVector = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);//(Input.mousePosition-prevMouse);
+            m_rotationVector *= 10;
+            if (m_rotationVector.x > 15) m_rotationVector.x = 15;
+            if (m_rotationVector.x < -15) m_rotationVector.x = -15;
+            if (m_rotationVector.y > 10) m_rotationVector.y = 10;
+            if (m_rotationVector.y < -10) m_rotationVector.y = -10;
+            //m_rotationVector.Normalize();
+            if (Mathf.Abs(m_rotationVector.x) > 1)
             {
-                //Debug.Log("perhepsDead");
+                transform.Rotate(Vector2.up, m_rotationVector.x * 0.5f, Space.World);
             }
+            if (Mathf.Abs(m_rotationVector.y) > 1)
+            {
+                m_camera.transform.Rotate(Vector2.right, -(m_rotationVector.y * 0.5f), Space.Self);
+            }
+			//Debug.Log("MousePos: "+m_rotationVector);
+			//------------------------------------------
+			Vector3 currPosMove = transform.position;
+			Vector3 moveVector = Vector3.zero;
+			if(Input.GetKey(KeyCode.W))
+			{
+				moveVector.z += 0.5f;
+			}
+			if(Input.GetKey(KeyCode.S))
+			{
+				moveVector.z -= 0.5f;
+			}
+			if(Input.GetKey(KeyCode.A))
+			{
+				moveVector.x -= 0.5f;
+			}
+			if(Input.GetKey(KeyCode.D))
+			{
+				moveVector.x += 0.5f;
+			}
+			
+			m_characterController.MovePosition(currPosMove + transform.TransformDirection(moveVector));
+			prevMouse = Input.mousePosition;
+			if(Input.GetKeyDown(KeyCode.Space))
+			{Debug.Log("Jump");/*if(rigidbody.velocity.y == 0) */
+				//rigidbody.AddForce(new Vector3(0,20,0));
+				rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
+			}
+			//Input.ResetInputAxes();
+			//Debug.Log("Y: "+Input.GetAxis("Mouse Y"));
+			//Debug.Log("X: "+Input.GetAxis("Mouse X"));
+			#endregion
+#endif
         }
         else
         {
@@ -119,7 +178,9 @@ public class FPSCharacterControl : MonoBehaviour
         Rect rectButtonJump = new Rect(Screen.width - 105, Screen.height - 105, 100, 100);
         if (GUI.Button(rectButtonJump, "Jump"))
         {
-            yVelocity = 2;
+			if(rigidbody.velocity.y ==0)
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y+20, rigidbody.velocity.z);
+            //yVelocity = 2;
         }
     }
 
@@ -150,7 +211,7 @@ public class FPSCharacterControl : MonoBehaviour
             tmpRot = transform.eulerAngles;
             stream.Serialize(ref tmpPos);
             stream.Serialize(ref tmpRot);
-        }
+		}
         else
         {
             stream.Serialize(ref tmpPos);
