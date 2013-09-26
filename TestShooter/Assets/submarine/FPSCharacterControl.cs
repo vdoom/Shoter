@@ -2,7 +2,7 @@
 #   define MOBILE_PLATFORM
 #endif
 using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class FPSCharacterControl : MonoBehaviour
 {
@@ -11,6 +11,8 @@ public class FPSCharacterControl : MonoBehaviour
     [SerializeField] GameObject m_camera = null;
     [SerializeField] GameObject myMob = null;
     [SerializeField] GameObject myGun = null;
+	[SerializeField] float maxVelocityChange = 10.0f;
+	[SerializeField] float m_speed = 10.0f;
     //[SerializeField] mob_script mob = null;
     NetworkView netview { get { return GetComponent<NetworkView>(); } }
     private Vector3 m_movingVector;
@@ -18,6 +20,8 @@ public class FPSCharacterControl : MonoBehaviour
     float yVelocity = 0;
     private bool m_isDead = false;
 	Vector3 prevMouse = Vector3.zero;
+
+	private List<ContactPoint> m_activeCollisions = null;
 
     void Start()
     {
@@ -29,6 +33,7 @@ public class FPSCharacterControl : MonoBehaviour
        //     myMob.animation.PlayQueued("run", QueueMode.PlayNow);
        // }
 		prevMouse = Input.mousePosition;
+		m_activeCollisions = new List<ContactPoint>();
     }
 
     void Update()
@@ -38,11 +43,15 @@ public class FPSCharacterControl : MonoBehaviour
 			prevMouse = Input.mousePosition;
 		}
         if (networkView && networkView.isMine)
-        {
+        {//Debug.Log("---------- CollusionDir ----------");
+		//	foreach(ContactPoint cpoint in m_activeCollisions)
+		//	{
+		//		Debug.Log("Points: " + cpoint.normal);
+		//	}
 			myMob.SetActive(false);
-              foreach (Camera cam in GameObject.FindObjectsOfType(typeof(Camera)))
-              { if (cam != m_camera.GetComponent<Camera>())cam.enabled = false; }
-              m_camera.GetComponent<Camera>().enabled = true;
+            foreach (Camera cam in GameObject.FindObjectsOfType(typeof(Camera)))
+            { if (cam != m_camera.GetComponent<Camera>())cam.enabled = false; }
+            m_camera.GetComponent<Camera>().enabled = true;
 #if MOBILE_PLATFORM
 			#region forTouch
             if (GetComponent<mob_script>().health > 0)
@@ -106,7 +115,8 @@ public class FPSCharacterControl : MonoBehaviour
                 //m_movingVector.y += yVelocity;
                 Vector3 currPos = transform.position;
                 //m_characterController.Move(m_movingVector);
-                m_characterController.MovePosition(currPos+m_movingVector);
+                //m_characterController.MovePosition(currPos+m_movingVector);
+				PlayerMoveBy(m_movingVector);
             }
 			#endregion
 #else
@@ -151,8 +161,8 @@ public class FPSCharacterControl : MonoBehaviour
 				GetComponent<mob_script>().Shot();
 			}
 			 
-			 
-			m_characterController.MovePosition(currPosMove + transform.TransformDirection(moveVector));
+			 PlayerMoveBy(transform.TransformDirection(moveVector));
+			//m_characterController.MovePosition(currPosMove + transform.TransformDirection(moveVector));
 			prevMouse = Input.mousePosition;
 			if(Input.GetKeyDown(KeyCode.Space))
 			{Debug.Log("Jump");/*if(rigidbody.velocity.y == 0) */
@@ -235,4 +245,20 @@ public class FPSCharacterControl : MonoBehaviour
         transform.position = Vector3.Lerp(syncStartPosition, syncEndPosition, syncTime / syncDelay);
         transform.eulerAngles = Vector3.Lerp(syncStartRotation, syncEndRotation, syncTime / syncDelay);
     }
+	
+	private void PlayerMoveBy(Vector3 t_movingVector)
+	{
+		t_movingVector *= m_speed;
+		Vector3 velocity = rigidbody.velocity;
+	    Vector3 velocityChange = (t_movingVector - velocity);
+	    velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
+	    velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
+	    velocityChange.y = 0;
+		rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
+	}
+	
+	private void PlayerMoveTo(Vector3 t_newPos)
+	{
+		rigidbody.MovePosition(t_newPos);
+	}
 }
