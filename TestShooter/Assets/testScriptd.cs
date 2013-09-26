@@ -32,10 +32,8 @@ public class testScriptd : MonoBehaviour
     
     void OnGUI()
     {
-        if (GUILayout.Button("Start Server"))
+        if (!Network.isServer && !Network.isClient && GUILayout.Button("Start Server"))
         {
-            // Use NAT punchthrough if no public IP present
-            //MasterServer.ipAddress = "192.168.1.3";
             Network.InitializeServer(32, 55370, !Network.HavePublicAddress());
             MasterServer.RegisterHost("MadBubbleSmashGame", "JohnDoes game", "l33t game for all");
         }

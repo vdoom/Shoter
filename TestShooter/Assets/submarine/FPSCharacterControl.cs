@@ -244,6 +244,7 @@ public class FPSCharacterControl : MonoBehaviour
             syncEndRotation = tmpRot;
         }
     }
+	
     private void SyncedMovement()
     {
         syncTime += Time.deltaTime;
@@ -266,4 +267,13 @@ public class FPSCharacterControl : MonoBehaviour
 	{
 		rigidbody.MovePosition(t_newPos);
 	}
+	
+	//void OnCollisionStay(Collision collisionInfo)
+	//{
+	//	foreach(ContactPoint cpoint in collisionInfo.contacts)
+	//	{
+	//		if(cpoint.normal.y < 0.5f)
+	//		{rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z);Debug.Log(cpoint.normal);}	
+	//	}
+	//}
 }

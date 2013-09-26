@@ -10,6 +10,7 @@ public class GUIButton : MonoBehaviour
     private Touch m_touch;
     private bool m_isTouched = false;
     private Rect m_rect;
+	private int m_touchId = -1;
 
     public bool visible = false;
 
@@ -48,7 +49,6 @@ public class GUIButton : MonoBehaviour
 						touch.position.y < Screen.height-m_rect.yMin && 
 						touch.position.y > Screen.height-m_rect.yMax)
                     {
-						Debug.Log("Touched");
                         m_touch = touch;
                         m_isTouched = true;
                         if(OnStartPress != null) OnStartPress();
