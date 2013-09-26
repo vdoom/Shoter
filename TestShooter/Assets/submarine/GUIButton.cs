@@ -21,6 +21,7 @@ public class GUIButton : MonoBehaviour
     void Start()
     {
         m_rect = new Rect(Screen.width * m_pos.x - (m_size.x / 2), Screen.height * m_pos.y - (m_size.y / 2), m_size.x, m_size.y);
+		Debug.Log("xMax: "+m_rect.xMax+"xMin: "+ m_rect.xMin+ "yMax" + m_rect.yMax+ "yMin"+ m_rect.yMin);
     }
 
     void OnGUI()
@@ -42,11 +43,12 @@ public class GUIButton : MonoBehaviour
 
                 if (!m_isTouched && touch.phase == TouchPhase.Began)
                 {
-                    if (touch.position.x > (Screen.width * m_pos.x - m_size.x / 2) &&
-                        touch.position.x < (Screen.width * m_pos.x + m_size.x / 2) &&
-                        touch.position.y > (Screen.width * m_pos.y - m_size.y / 2) &&
-                        touch.position.y < (Screen.width * m_pos.y + m_size.y / 2))
+                    if(touch.position.x > m_rect.xMin &&
+						touch.position.x < m_rect.xMax &&
+						touch.position.y < Screen.height-m_rect.yMin && 
+						touch.position.y > Screen.height-m_rect.yMax)
                     {
+						Debug.Log("Touched");
                         m_touch = touch;
                         m_isTouched = true;
                         if(OnStartPress != null) OnStartPress();
@@ -57,10 +59,10 @@ public class GUIButton : MonoBehaviour
                     if (touch.fingerId == m_touch.fingerId)
                     {
                         m_touch = touch;
-                        if (touch.position.x > (Screen.width * m_pos.x - m_size.x / 2) &&
-                            touch.position.x < (Screen.width * m_pos.x + m_size.x / 2) &&
-                             touch.position.y > (Screen.width * m_pos.y - m_size.y / 2) &&
-                             touch.position.y < (Screen.width * m_pos.y + m_size.y / 2))
+						 if(touch.position.x > m_rect.xMin &&
+							touch.position.x < m_rect.xMax &&
+							touch.position.y < Screen.height-m_rect.yMin && 
+							touch.position.y > Screen.height-m_rect.yMax)
                         {
                             if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
                             {

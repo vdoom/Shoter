@@ -34,6 +34,12 @@ public class FPSCharacterControl : MonoBehaviour
        // }
 		prevMouse = Input.mousePosition;
 		m_activeCollisions = new List<ContactPoint>();
+
+		GameObject.Find("Lew_new").GetComponent<GUIButton>().OnStartPress = delegate 
+		{
+			rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
+		};
+		
     }
 
     void Update()
@@ -189,13 +195,12 @@ public class FPSCharacterControl : MonoBehaviour
 
     void OnGUI()
     {
-        Rect rectButtonJump = new Rect(Screen.width - 105, Screen.height - 105, 100, 100);
-        if (GUI.Button(rectButtonJump, "Jump"))
-        {
-			if(rigidbody.velocity.y ==0)
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y+20, rigidbody.velocity.z);
-            //yVelocity = 2;
-        }
+ //       Rect rectButtonJump = new Rect(Screen.width - 105, Screen.height - 105, 100, 100);
+ //       if (GUI.Button(rectButtonJump, "Jump"))
+ //       {
+//			if(rigidbody.velocity.y ==0)
+//			rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y+20, rigidbody.velocity.z);
+//        }
     }
 
     private Vector2 RotateVectorByAngle(Vector2 t_vec, float t_angle)
