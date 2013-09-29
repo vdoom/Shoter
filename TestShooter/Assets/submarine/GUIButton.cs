@@ -49,6 +49,7 @@ public class GUIButton : MonoBehaviour
 						touch.position.y < Screen.height-m_rect.yMin && 
 						touch.position.y > Screen.height-m_rect.yMax)
                     {
+                        Debug.Log("isTouch");
                         m_touch = touch;
                         m_isTouched = true;
                         if(OnStartPress != null) OnStartPress();

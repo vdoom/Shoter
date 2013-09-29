@@ -15,6 +15,7 @@ public class mob_script : MonoBehaviour
     void Start()
     {
         health = 100;
+        GameObject.Find("ShotButton").GetComponent<GUIButton>().OnStartPress = delegate { Shot(); };
     }
 
     void Update()
@@ -29,8 +30,8 @@ public class mob_script : MonoBehaviour
             Rect rectLabel = new Rect(10, Screen.height - 30, 100, 50);
             GUI.Label(rectLabel, string.Concat("Helth: ", health.ToString()));
             Rect rectButtonShot = new Rect(Screen.width - 105, Screen.height - 205, 100, 100);
-            if (GUI.Button(rectButtonShot, "SHOT"))
-            { Shot(); }
+           // if (GUI.Button(rectButtonShot, "SHOT"))
+           // { Shot(); }
             Rect rectCross = new Rect((Screen.width / 2) - 30, (Screen.height / 2) - 30, 60, 60);
             GUI.DrawTexture(rectCross, m_cross);
         }

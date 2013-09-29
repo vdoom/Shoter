@@ -34,11 +34,14 @@ public class FPSCharacterControl : MonoBehaviour
        // }
 		prevMouse = Input.mousePosition;
 		m_activeCollisions = new List<ContactPoint>();
-
-		GameObject.Find("Lew_new").GetComponent<GUIButton>().OnStartPress = delegate 
-		{
-			rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
-		};
+        if (GameObject.Find("JumpButton"))
+        {
+            //Debug.Log("Finded");
+            GameObject.Find("JumpButton").GetComponent<GUIButton>().OnStartPress = delegate
+            {
+                rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
+            };
+        }
 		
     }
 
