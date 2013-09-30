@@ -170,7 +170,7 @@ public class FPSCharacterControl : MonoBehaviour
 				GetComponent<mob_script>().Shot();
 			}
 			 
-			 PlayerMoveBy(transform.TransformDirection(moveVector));
+			 PlayerMoveBy(transform.TransformDirection(moveVector*3));
 			//m_characterController.MovePosition(currPosMove + transform.TransformDirection(moveVector));
 			prevMouse = Input.mousePosition;
 			if(Input.GetKeyDown(KeyCode.Space))
