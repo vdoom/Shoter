@@ -126,7 +126,7 @@ public class FPSJoystick : MonoBehaviour
     {
         if (startTouchPosLeft != Vector2.zero)
         {
-            Rect rect1 = new Rect(startTouchPosLeft.x - 100, ((Screen.height / 2) - startTouchPosLeft.y) + 100, 200, 200);
+            Rect rect1 = new Rect(startTouchPosLeft.x - 100, (Screen.height  - startTouchPosLeft.y) - 100, 200, 200);
             GUI.DrawTexture(rect1, m_leftTextureStatic, ScaleMode.ScaleAndCrop, true);
         }
         if (currTouchPosLeft != Vector2.zero)
@@ -136,7 +136,7 @@ public class FPSJoystick : MonoBehaviour
             {
                activePos = startTouchPosLeft + ((activePos - startTouchPosLeft).normalized * 75);
             }
-            Rect rect2 = new Rect(activePos.x - 25, ((Screen.height / 2) - activePos.y) + 175, 50, 50);
+            Rect rect2 = new Rect(activePos.x - 25, (Screen.height - activePos.y) - 25, 50, 50);
             GUI.DrawTexture(rect2, m_leftTextureActive, ScaleMode.ScaleAndCrop, true);
         }
 
