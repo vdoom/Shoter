@@ -4,18 +4,22 @@ using System.Collections;
 public class mob_script : MonoBehaviour
 {
     [SerializeField] Texture2D m_cross = null;
+    [SerializeField] abstractWeapon m_rifle = null;
+
     public int health
     {
         get;
         private set;
     }
     public NetworkView netview { get { return GetComponent<NetworkView>(); } }
+    public abstractWeapon rifle { get { return m_rifle; } }
     //public CharacterController charCtrl { get { return GetComponent<CharacterController>(); } }
 
     void Start()
     {
         health = 100;
-        GameObject.Find("ShotButton").GetComponent<GUIButton>().OnStartPress = delegate { Shot(); };
+        GameObject.Find("ShotButton").GetComponent<GUIButton>().OnStartPress = delegate { Shot(); m_rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.shot); };
+        GameObject.Find("ShotButton").GetComponent<GUIButton>().OnRelease = delegate { m_rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle); };
     }
 
     void Update()

@@ -107,7 +107,7 @@ public class FPSCharacterControl : MonoBehaviour
                     if (m_movingVector.x < -0.8f) m_movingVector.x = -0.8f;
                     if (m_movingVector.z < -0.8f) m_movingVector.z = -0.8f;
 					Debug.Log("Move");
-                    
+                    GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
                 }
                 else
                 {
@@ -127,10 +127,10 @@ public class FPSCharacterControl : MonoBehaviour
                 //m_characterController.MovePosition(currPos+m_movingVector);
 				PlayerMoveBy(m_movingVector);
             }
-			#endregion
+            #endregion
 #else
-			#region forKeyBoard
-			m_rotationVector = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);//(Input.mousePosition-prevMouse);
+            #region forKeyBoard
+            m_rotationVector = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);//(Input.mousePosition-prevMouse);
             m_rotationVector *= 10;
             if (m_rotationVector.x > 15) m_rotationVector.x = 15;
             if (m_rotationVector.x < -15) m_rotationVector.x = -15;
@@ -152,23 +152,33 @@ public class FPSCharacterControl : MonoBehaviour
 			if(Input.GetKey(KeyCode.W))
 			{
 				moveVector.z += 0.5f;
+                GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
 			}
 			if(Input.GetKey(KeyCode.S))
 			{
 				moveVector.z -= 0.5f;
+                GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
 			}
 			if(Input.GetKey(KeyCode.A))
 			{
 				moveVector.x -= 0.5f;
+                GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
 			}
 			if(Input.GetKey(KeyCode.D))
 			{
 				moveVector.x += 0.5f;
+                GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
 			}
-			if(Input.GetMouseButtonDown(0))
-			{
-				GetComponent<mob_script>().Shot();
-			}
+            if (Input.GetMouseButtonDown(0))
+            {
+                GetComponent<mob_script>().Shot();
+                GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.shot);
+            }
+            else if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) &&
+                !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+            {
+                GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle);
+            }
 			 
 			 PlayerMoveBy(transform.TransformDirection(moveVector*3));
 			//m_characterController.MovePosition(currPosMove + transform.TransformDirection(moveVector));
