@@ -71,18 +71,18 @@ public class FPSCharacterControl : MonoBehaviour
                 {
                     m_rotationVector = m_joystick.rightDiffVector;
                     m_rotationVector /= 3;
-                    if (m_rotationVector.x > 15) m_rotationVector.x = 15;
-                    if (m_rotationVector.x < -15) m_rotationVector.x = -15;
-                    if (m_rotationVector.y > 10) m_rotationVector.y = 10;
-                    if (m_rotationVector.y < -10) m_rotationVector.y = -10;
+                    if (m_rotationVector.x > 20) m_rotationVector.x = 20;
+                    if (m_rotationVector.x < -20) m_rotationVector.x = -20;
+                    if (m_rotationVector.y > 15) m_rotationVector.y = 15;
+                    if (m_rotationVector.y < -15) m_rotationVector.y = -15;
                     //m_rotationVector.Normalize();
                     if (Mathf.Abs(m_joystick.rightDiffVector.x) > 1)
                     {
-                        transform.Rotate(Vector2.up, m_rotationVector.x * 0.5f, Space.World);
+                        transform.Rotate(Vector2.up, m_rotationVector.x * 1f, Space.World);
                     }
                     if (Mathf.Abs(m_joystick.rightDiffVector.y) > 1)
                     {
-                        m_camera.transform.Rotate(Vector2.right, -(m_rotationVector.y * 0.5f), Space.Self);
+                        m_camera.transform.Rotate(Vector2.right, -(m_rotationVector.y * 1f), Space.Self);
                     }
                 }
                 //m_rotationVector = m_joystick.rightVector;
@@ -111,6 +111,7 @@ public class FPSCharacterControl : MonoBehaviour
                 }
                 else
                 {
+                    GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle);
                     m_movingVector = new Vector3(0, 0, 0);
                 }
                 //if (!m_characterController.isGrounded)

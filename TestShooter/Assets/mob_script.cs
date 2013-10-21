@@ -43,6 +43,7 @@ public class mob_script : MonoBehaviour
 
     public void Shot()
     {
+        m_rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.shot);
         Debug.Log("Shot");
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));//(Input.mousePosition);
