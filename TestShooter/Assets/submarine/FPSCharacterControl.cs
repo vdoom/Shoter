@@ -11,8 +11,8 @@ public class FPSCharacterControl : MonoBehaviour
     [SerializeField] GameObject m_camera = null;
     [SerializeField] GameObject myMob = null;
     [SerializeField] GameObject myGun = null;
-	[SerializeField] float maxVelocityChange = 10.0f;
-	[SerializeField] float m_speed = 10.0f;
+	[SerializeField] float maxVelocityChange = 5.0f;
+	[SerializeField] float m_speed = 3.0f;
     //[SerializeField] mob_script mob = null;
     NetworkView netview { get { return GetComponent<NetworkView>(); } }
     private Vector3 m_movingVector;
@@ -32,15 +32,18 @@ public class FPSCharacterControl : MonoBehaviour
        // {
        //     myMob.animation.PlayQueued("run", QueueMode.PlayNow);
        // }
-		prevMouse = Input.mousePosition;
-		m_activeCollisions = new List<ContactPoint>();
-        if (GameObject.Find("JumpButton"))
+        if (networkView && networkView.isMine)
         {
-            //Debug.Log("Finded");
-            GameObject.Find("JumpButton").GetComponent<GUIButton>().OnStartPress = delegate
+            prevMouse = Input.mousePosition;
+            m_activeCollisions = new List<ContactPoint>();
+            if (GameObject.Find("JumpButton"))
             {
-                rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
-            };
+                //Debug.Log("Finded");
+                GameObject.Find("JumpButton").GetComponent<GUIButton>().OnStartPress = delegate
+                {
+                    rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
+                };
+            }
         }
 		
     }
@@ -107,11 +110,14 @@ public class FPSCharacterControl : MonoBehaviour
                     if (m_movingVector.x < -0.8f) m_movingVector.x = -0.8f;
                     if (m_movingVector.z < -0.8f) m_movingVector.z = -0.8f;
 					Debug.Log("Move");
-                    GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
+                    
+                    if (GetComponent<mob_script>().rifle.currentAnimState != abstractWeapon.WeaponAnimStates.shot)
+                        GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
                 }
                 else
                 {
-                    GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle);
+                    if (GetComponent<mob_script>().rifle.currentAnimState != abstractWeapon.WeaponAnimStates.shot)
+                        GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle);
                     m_movingVector = new Vector3(0, 0, 0);
                 }
                 //if (!m_characterController.isGrounded)
@@ -146,30 +152,30 @@ public class FPSCharacterControl : MonoBehaviour
             {
                 m_camera.transform.Rotate(Vector2.right, -(m_rotationVector.y * 0.5f), Space.Self);
             }
-			//Debug.Log("MousePos: "+m_rotationVector);
-			//------------------------------------------
-			Vector3 currPosMove = transform.position;
-			Vector3 moveVector = Vector3.zero;
-			if(Input.GetKey(KeyCode.W))
-			{
-				moveVector.z += 0.5f;
+            //Debug.Log("MousePos: "+m_rotationVector);
+            //------------------------------------------
+            Vector3 currPosMove = transform.position;
+            Vector3 moveVector = Vector3.zero;
+            if (Input.GetKey(KeyCode.W))
+            {
+                moveVector.z += 0.5f;
                 GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
-			}
-			if(Input.GetKey(KeyCode.S))
-			{
-				moveVector.z -= 0.5f;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                moveVector.z -= 0.5f;
                 GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
-			}
-			if(Input.GetKey(KeyCode.A))
-			{
-				moveVector.x -= 0.5f;
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                moveVector.x -= 0.5f;
                 GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
-			}
-			if(Input.GetKey(KeyCode.D))
-			{
-				moveVector.x += 0.5f;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                moveVector.x += 0.5f;
                 GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.walk);
-			}
+            }
             if (Input.GetMouseButtonDown(0))
             {
                 GetComponent<mob_script>().Shot();
@@ -178,19 +184,21 @@ public class FPSCharacterControl : MonoBehaviour
             else if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S) &&
                 !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
             {
-                GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle);
+                if (GetComponent<mob_script>().rifle.currentAnimState != abstractWeapon.WeaponAnimStates.shot)
+                    GetComponent<mob_script>().rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle);
             }
-			 
-			 PlayerMoveBy(transform.TransformDirection(moveVector*3));
-			//m_characterController.MovePosition(currPosMove + transform.TransformDirection(moveVector));
-			prevMouse = Input.mousePosition;
-			if(Input.GetKeyDown(KeyCode.Space))
-			{Debug.Log("Jump");/*if(rigidbody.velocity.y == 0) */
-				//rigidbody.AddForce(new Vector3(0,20,0));
-				rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
-			}
-			//Input.ResetInputAxes();
-			#endregion
+
+            PlayerMoveBy(transform.TransformDirection(moveVector * 3));
+            //m_characterController.MovePosition(currPosMove + transform.TransformDirection(moveVector));
+            prevMouse = Input.mousePosition;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("Jump");/*if(rigidbody.velocity.y == 0) */
+                //rigidbody.AddForce(new Vector3(0,20,0));
+                rigidbody.velocity = new Vector3(rigidbody.velocity.x, rigidbody.velocity.y + 20, rigidbody.velocity.z);
+            }
+            //Input.ResetInputAxes();
+            #endregion
 #endif
         }
         else
@@ -267,13 +275,16 @@ public class FPSCharacterControl : MonoBehaviour
     }
 	
 	private void PlayerMoveBy(Vector3 t_movingVector)
-	{
+    {
+        //Debug.Log("Current Moving Vector: "+t_movingVector);
 		t_movingVector *= m_speed;
-		Vector3 velocity = rigidbody.velocity;
+        Vector3 velocity = rigidbody.velocity;
+        //Debug.Log("current Velocity: "+ velocity);
 	    Vector3 velocityChange = (t_movingVector - velocity);
 	    velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
 	    velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
 	    velocityChange.y = 0;
+        //Debug.Log("velocityChange: "+velocityChange);
 		rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
 	}
 	

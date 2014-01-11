@@ -5,7 +5,12 @@ public class mob_script : MonoBehaviour
 {
     [SerializeField] Texture2D m_cross = null;
     [SerializeField] abstractWeapon m_rifle = null;
-
+    //----------attach-animation-for-rifle----------
+    [SerializeField] Animation m_GunIdle = null;
+    [SerializeField] Animation m_GunShot = null;
+    [SerializeField] Animation m_GunWalk = null;
+    [SerializeField] Animation m_GunRun = null;
+    //----------------------------------------------
     public int health
     {
         get;
@@ -17,9 +22,16 @@ public class mob_script : MonoBehaviour
 
     void Start()
     {
-        health = 100;
-        GameObject.Find("ShotButton").GetComponent<GUIButton>().OnStartPress = delegate { Shot(); m_rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.shot); };
-        GameObject.Find("ShotButton").GetComponent<GUIButton>().OnRelease = delegate { m_rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle); };
+        if (networkView && networkView.isMine)
+        {
+            m_rifle.animation.AddClip(m_GunShot.clip, "Fire");
+            m_rifle.animation.AddClip(m_GunIdle.clip, "Idle");
+            m_rifle.animation.AddClip(m_GunWalk.clip, "Walk");
+            m_rifle.animation.AddClip(m_GunRun.clip, "Run");
+            health = 100;
+            GameObject.Find("ShotButton").GetComponent<GUIButton>().OnStartPress = delegate { networkView.RPC("Shot",networkView.owner); m_rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.shot); };
+            GameObject.Find("ShotButton").GetComponent<GUIButton>().OnRelease = delegate { m_rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.idle); };
+        }
     }
 
     void Update()
@@ -40,7 +52,7 @@ public class mob_script : MonoBehaviour
             GUI.DrawTexture(rectCross, m_cross);
         }
     }
-
+    [RPC]
     public void Shot()
     {
         m_rifle.SetAnimStates(abstractWeapon.WeaponAnimStates.shot);
@@ -53,6 +65,10 @@ public class mob_script : MonoBehaviour
             if (cldr != null && cldr.GetComponent<mob_script>() != null && cldr.GetComponent<mob_script>() != this)
             {
                 cldr.GetComponent<NetworkView>().RPC("CalckHit", cldr.GetComponent<NetworkView>().owner);
+            }
+            else if (cldr != null && cldr.GetComponent<bot_script>() != null)
+            {
+                cldr.GetComponent<NetworkView>().RPC("Dead", cldr.GetComponent<NetworkView>().owner);//<bot_script>().Dead();
             }
                 //hit.collider.enabled = false;
         }

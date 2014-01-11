@@ -30,7 +30,7 @@ public class rifleWeapon : abstractWeapon
     public override void SetAnimStates(WeaponAnimStates t_animStates)
     {
         base.SetAnimStates(t_animStates);
-
+        //Debug.Log(t_animStates);
         switch (t_animStates)
         {
             case WeaponAnimStates.idle:

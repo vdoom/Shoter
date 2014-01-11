@@ -24,7 +24,7 @@ public class edit_text_mesh : Editor
 
     public override void OnInspectorGUI()
     {
-        //base.OnInspectorGUI();
+        base.OnInspectorGUI();
         TextMesh textMesh = target as TextMesh;
 
         Color preservedColor = Color.white;

@@ -53,6 +53,7 @@ public class GUIButton : MonoBehaviour
                         m_touch = touch;
                         m_isTouched = true;
                         if(OnStartPress != null) OnStartPress();
+                        return;
                     }
                 }
                 else if (m_isTouched)

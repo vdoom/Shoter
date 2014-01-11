@@ -4,6 +4,8 @@ using System.Collections;
 public class BotSpawner : MonoBehaviour 
 {
 	[SerializeField] BotType m_botType = BotType.none;
+
+    private BoxCollider m_boxCollider = null;
 	
 	public enum BotType
 	{
@@ -23,8 +25,9 @@ public class BotSpawner : MonoBehaviour
 	{
 		if(!collider)
 		{
-			gameObject.AddComponent<BoxCollider>();
-			GetComponent<BoxCollider>().size = new Vector3(10, 10, 10);
+            m_boxCollider = gameObject.AddComponent<BoxCollider>();
+            m_boxCollider.size = new Vector3(10, 10, 10);
+            m_boxCollider.isTrigger = true;
 		}
 	}
 	

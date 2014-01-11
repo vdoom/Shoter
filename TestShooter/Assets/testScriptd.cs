@@ -9,8 +9,8 @@ public class testScriptd : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Network.natFacilitatorIP = "89.252.4.131";
-        MasterServer.ipAddress = "89.252.4.131";
+       // Network.natFacilitatorIP = "89.252.4.131";
+      //  MasterServer.ipAddress = "89.252.4.131";
         MasterServer.RequestHostList("MadBubbleSmashGame");
         //m_anim.clip.wrapMode = WrapMode.Loop;
         //m_anim.Play("run", AnimationPlayMode.Mix);
@@ -36,6 +36,7 @@ public class testScriptd : MonoBehaviour
         {
             Network.InitializeServer(32, 55370, !Network.HavePublicAddress());
             MasterServer.RegisterHost("MadBubbleSmashGame", "JohnDoes game", "l33t game for all");
+            GetComponent<BotManager>().GenBots();
         }
         HostData[] data = MasterServer.PollHostList();
 	    // Go through all the hosts in the host list
